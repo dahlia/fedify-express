@@ -1,5 +1,4 @@
 import { Readable } from "node:stream";
-import type { ReadableStream as WebReadableStream } from "node:stream/web";
 import type { Federation } from "@fedify/fedify";
 import type {
   Request as ERequest,
@@ -25,6 +24,8 @@ export function integrateFederation<TContextData>(
         ? contextData
         : Promise.resolve(contextData);
     contextDataPromise.then(async (contextData) => {
+      let notFound = false;
+      let notAcceptable = false;
       const response = await federation.fetch(request, {
         contextData,
         onNotFound: () => {
@@ -32,8 +33,9 @@ export function integrateFederation<TContextData>(
           // (i.e., not a federation-related request), it will call the `next`
           // function provided by the Express framework to continue the request
           // handling by the Express:
+          notFound = true;
           next();
-          return new Response("", { status: 404 }); // unused
+          return new Response("Not found", { status: 404 }); // unused
         },
         onNotAcceptable: () => {
           // Similar to `onNotFound`, but slightly more tricky.
@@ -42,11 +44,27 @@ export function integrateFederation<TContextData>(
           // the `next` function provided by the Express framework to continue
           // if any route is matched, and otherwise, it will return a 406 Not
           // Acceptable response:
-          if (req.route != null) next();
-          return new Response("", { status: 406 });
+          notAcceptable = true;
+          next();
+          return new Response("Not acceptable", {
+            status: 406,
+            headers: {
+              "Content-Type": "text/plain",
+              Vary: "Accept",
+            },
+          });
         },
       });
-      setEResponse(res, response);
+      if (notFound || (notAcceptable && req.route != null)) return;
+      await setEResponse(res, response);
+      // Prevent the Express framework from sending the response again:
+      res.end();
+      res.status = () => res;
+      res.send = () => res;
+      res.end = () => res;
+      res.json = () => res;
+      res.removeHeader = () => res;
+      res.setHeader = () => res;
     });
   };
 }
@@ -64,14 +82,28 @@ function fromERequest(req: ERequest): Request {
   return new Request(url, {
     method: req.method,
     headers,
-    body: Readable.toWeb(req) as ReadableStream<Uint8Array>,
+    body:
+      req.method === "GET" || req.method === "HEAD"
+        ? undefined
+        : (Readable.toWeb(req) as ReadableStream<Uint8Array>),
   });
 }
 
-function setEResponse(res: EResponse, response: Response): void {
+function setEResponse(res: EResponse, response: Response): Promise<void> {
   res.status(response.status);
   response.headers.forEach((value, key) => res.setHeader(key, value));
-  if (response.body == null) return;
-  // biome-ignore lint/suspicious/noExplicitAny: Readable.fromWeb is untyped
-  Readable.fromWeb(response.body as WebReadableStream<any>).pipe(res);
+  if (response.body == null) return Promise.resolve();
+  const body = response.body;
+  return new Promise((resolve) => {
+    const reader = body.getReader();
+    reader.read().then(function read({ done, value }) {
+      if (done) {
+        reader.releaseLock();
+        resolve();
+        return;
+      }
+      res.write(Buffer.from(value));
+      reader.read().then(read);
+    });
+  });
 }

@@ -38,6 +38,11 @@ Changelog
 
 To be released.
 
+ -  Fixed the middleware to not fill `Request.body` when the request method is
+    `GET` or `HEAD`.
+ -  Fixed the middleware to content-negotiate the response based on
+    the `Accept` header.
+
 ### Version 0.1.2
 
 Released on August 5, 2024.

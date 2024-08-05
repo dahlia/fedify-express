@@ -34,6 +34,10 @@ app.use(integrateFederation(federation, (req) => "context data goes here"));
 Changelog
 ---------
 
+### Version 0.1.3
+
+To be released.
+
 ### Version 0.1.2
 
 Released on August 5, 2024.

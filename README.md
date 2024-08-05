@@ -36,7 +36,7 @@ Changelog
 
 ### Version 0.1.3
 
-To be released.
+Released on August 5, 2024.
 
  -  Fixed the middleware to not fill `Request.body` when the request method is
     `GET` or `HEAD`.

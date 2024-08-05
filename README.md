@@ -36,7 +36,7 @@ Changelog
 
 ### Version 0.1.2
 
-To be released.
+Released on August 5, 2024.
 
  -  Fixed incorrectly configured export targets in *package.json*.
 

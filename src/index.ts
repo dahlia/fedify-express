@@ -82,10 +82,11 @@ function fromERequest(req: ERequest): Request {
   return new Request(url, {
     method: req.method,
     headers,
+    duplex: "half",
     body:
       req.method === "GET" || req.method === "HEAD"
         ? undefined
-        : (Readable.toWeb(req) as ReadableStream<Uint8Array>),
+        : (Readable.toWeb(req)),
   });
 }
 

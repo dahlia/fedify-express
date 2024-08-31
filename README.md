@@ -36,7 +36,10 @@ Changelog
 
 ### Version 0.1.4
 
-To be released.
+Released on August 31, 2024.
+
+ -  Fixed a bug where it throws `TypeError` with message <q>RequestInit: duplex
+    option is required when sending a body.</q>
 
 ### Version 0.1.3
 

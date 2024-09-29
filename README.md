@@ -34,9 +34,9 @@ app.use(integrateFederation(federation, (req) => "context data goes here"));
 Changelog
 ---------
 
-### Version 0.1.5
+### Version 0.2.0
 
-To be released.
+Released on September 30, 2024.
 
  -  Relaxed the requirement for the peer dependency `@fedify/fedify` to allow
     any version under 2.0.0.

@@ -38,6 +38,9 @@ Changelog
 
 To be released.
 
+ -  Relaxed the requirement for the peer dependency `@fedify/fedify` to allow
+    any version under 2.0.0.
+
 ### Version 0.1.4
 
 Released on August 31, 2024.

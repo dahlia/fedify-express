@@ -1,6 +1,10 @@
 @fedify/express: Integrate Fedify with Express
 ==============================================
 
+> [!IMPORTANT]
+> This repository is obsolete and has been archived in favor of the monorepo
+> [fedify-dev/fedify].
+
 [![npm][npm badge]][npm]
 [![Matrix][Matrix badge]][Matrix]
 [![Discord][Discord badge]][Discord]
@@ -22,6 +26,7 @@ app.set("trust proxy", true);
 app.use(integrateFederation(federation, (req) => "context data goes here"));
 ~~~~
 
+[fedify-dev/fedify]: https://github.com/fedify-dev/fedify
 [npm]: https://www.npmjs.com/package/@fedify/express
 [npm badge]: https://img.shields.io/npm/v/@fedify/express?logo=npm
 [Matrix]: https://matrix.to/#/#fedify:matrix.org
